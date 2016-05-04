@@ -5,6 +5,7 @@
 # Create Time: 2016-05-04 20:57:32
 # Last Modified: 2016-05-04 20:57:32
 ####################################################*/
+//线程共享进程id
 #include "apue.h"
 
 void print_id(const char *str){
