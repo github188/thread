@@ -36,6 +36,7 @@ void put(struct products *prodc, int data){
 	pthread_mutex_lock(&(prodc->lock));//get mutex ===> lock
 
 	/* when (writepos + 1) is equal readpos, means it's full now, can't put data into it right now, block here */
+	//当writepos+1 与 readpos 相等时，表示 满了，不能再写入了
 	while((prodc->writepos+1)%BUFFER_SIZE == prodc->readpos){
 		printf("\tproducer wait for condition : not_full\n");
 		pthread_cond_wait(&(prodc->not_full), &(prodc->lock));
@@ -60,6 +61,7 @@ int get(struct products *prodc){
 	pthread_mutex_lock(&(prodc->lock));//get mutex ===> lock
 
 	//if writepos is equal readpos, means it's not empty, other thread can't get data right now, block here
+	//当 writepos 与 readpos 相等时，表示空了，不能再读取了
 	while(prodc->writepos == prodc->readpos){
 		printf("consumer wait for condition : not_empty\n");
 		pthread_cond_wait(&(prodc->not_empty), &(prodc->lock));//wait for condition : not_empty, block here
@@ -133,3 +135,27 @@ int main(int argc, char *argv[]){
 
 	return 0;
 }
+
+/*
+ 生产者===消费者
+ 3个对象：
+ 	互斥锁， 配合条件变量使用
+	空间 非空条件变量：
+		消费者线程 在 空间没有产品时 等待这一条件变量
+		生产者线程 在生成产品后 通知此条件变量
+	空间 非满条件变量：
+		生产者线程 在 空间满时 等待此条件变量
+		消费者线程 在 消耗产品后 通知此条件变量
+
+生产者线程 流程：
+	（1）申请互斥锁，若 互斥锁 已被锁定，则等待
+	（2）测试 空间 非满条件变量
+	（3）若 条件满足，执行操作，完成后解锁 互斥锁
+	（4）若 第二步 不满足，阻塞等待 非满条件变量
+
+消费者线程 流程：
+	（1）申请互斥锁，若已被锁定，则阻塞
+	（2）测试 空间 非空
+	（3）若 满足条件，则执行操作，完成后解锁
+	（4）若 第二步 不满足，阻塞当前线程，等待 空间 非空条件
+ * */
