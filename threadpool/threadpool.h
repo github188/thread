@@ -4,6 +4,8 @@
 # Email: nameqiaohe@126.com
 # Create Time: 2016-05-26 05:47:09
 # Last Modified: 2016-05-26 05:47:09
+# Description : 线程池 的简单实现
+# 	参考博客：http://www.cnblogs.com/xiehongfeng100/p/4663942.html	
 ####################################################*/
 
 #ifndef THREADPOOL_H_
